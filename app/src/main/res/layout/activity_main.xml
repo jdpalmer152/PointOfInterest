@@ -4,13 +4,14 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+
     <org.osmdroid.views.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:enabled="true"
         android:clickable="true"
         android:id="@+id/map1"
-            tilesource="Mapnik"
+        tilesource="Mapnik"
         />
 
     </LinearLayout>

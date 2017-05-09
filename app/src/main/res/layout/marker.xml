@@ -4,8 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
-        android:textSize="12pt" android:id="@+id/poi_name" />
-    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
-        android:textSize="8pt" android:id="@+id/poi_desc" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name"
+        android:id="@+id/name"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Type"
+        android:id="@+id/type" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description"
+        android:id="@+id/description"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Point of Interest"
+        android:id="@+id/button"/>
+
 </LinearLayout>

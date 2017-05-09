@@ -7,15 +7,21 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import java.util.ArrayList;
 
 public class MainActivity extends Activity
 {
    MapView mv;
+    ItemizedIconOverlay<OverlayItem> items;
+    ItemizedIconOverlay.OnItemGestureListener<OverlayItem> markerGestureListener;
    protected void onCreate(Bundle savedInstancedState)
    {
         super.onCreate(savedInstancedState);
@@ -29,6 +35,65 @@ public class MainActivity extends Activity
         mv.getController().setZoom(14);
         mv.getController().setCenter(new GeoPoint(50.9, -1.40));
 
+        double latitude = mv.getMapCenter() .getLatitude();
+        double longitude = mv.getMapCenter() .getLongitude();
 
+       markerGestureListener = new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>()
+       {
+           public boolean onItemLongPress(int i, OverlayItem item) {
+               Toast.makeText(MainActivity.this, item.getSnippet(),  Toast.LENGTH_SHORT).show();
+               return true;
+           }
+           public boolean onItemSingleTapUp(int i, OverlayItem item){
+               Toast.makeText(MainActivity.this, item.getSnippet(), Toast.LENGTH_SHORT).show();
+               return true;
+           }
+       };
+       items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), markerGestureListener);
+       mv.getOverlays().add(items);
    }
+
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.menu_markers, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+      if (item.getItemId() == R.id.addmarker)
+      {
+        Intent intent = new Intent(this, PoiActivity.class);
+          startActivityForResult(intent, 0);
+          return true;
+      }
+       return false;
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        if(requestCode==0)
+        {
+
+            Bundle bundle = intent.getExtras();
+
+            String POIName = bundle.getString("2palmj38.name");
+            String POIType = bundle.getString("2palmj38.type");
+            String POIDesc = bundle.getString("2palmj38.desc");
+
+            double latitude = mv.getMapCenter().getLatitude();
+            double longitude = mv.getMapCenter().getLongitude();
+
+            OverlayItem item = new OverlayItem(POIName, POIType + POIDesc, new GeoPoint(latitude, longitude));
+
+            items.addItem(item);
+            mv.invalidate();
+
+            Toast.makeText(MainActivity.this, "Marker has been added!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 }
