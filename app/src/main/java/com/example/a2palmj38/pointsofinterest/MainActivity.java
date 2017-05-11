@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -106,8 +107,7 @@ public class MainActivity extends Activity
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
-     if (upload == false)
-     {
+     if (upload == false) {
          if (requestCode == 0) {
 
              Bundle bundle = intent.getExtras();
@@ -127,6 +127,10 @@ public class MainActivity extends Activity
              Toast.makeText(MainActivity.this, "Marker has been added!", Toast.LENGTH_SHORT).show();
          }
      }
+     else
+     {
+        Toast.makeText(MainActivity.this, "Service is unavailable!", Toast.LENGTH_SHORT).show();
+     }
     }
     private void markersave()
     {
@@ -136,7 +140,7 @@ public class MainActivity extends Activity
         {
             PrintWriter pw = new PrintWriter(new FileWriter(Environment.getExternalStorageDirectory().getAbsolutePath() + "/markers.txt"));
 
-            for (int i = 0; i < items.size(); i++)
+            for (int i=0; i < items.size(); i++)
             {
                 OverlayItem item = items.getItem(i);
                 String stringMarkerSave = item.getTitle() + ", " + item.getSnippet() + ", " + item.getPoint().getLatitude() + ", " + item.getPoint().getLongitude();
@@ -159,7 +163,30 @@ public class MainActivity extends Activity
     {
         Toast.makeText(MainActivity.this, "Markers loaded!", Toast.LENGTH_SHORT).show();
 
+        try
+        {
+            FileReader fr = new FileReader(Environment.getExternalStorageDirectory().getAbsolutePath() + "/markers.txt");
+            BufferedReader reader = new BufferedReader(fr);
+            String stringMarkerLoad;
+            while((stringMarkerLoad = reader.readLine()) !=null)
+            {
 
+                String[] mapmarker = stringMarkerLoad.split(", ");
+                if(mapmarker.length==4)
+                {
+                    double lat=Double.parseDouble(mapmarker[2]);
+                    double lon=Double.parseDouble(mapmarker[3]);
+
+
+                    OverlayItem item = new OverlayItem(mapmarker[0], mapmarker[1], new GeoPoint(lat, lon));
+                    items.addItem(item);
+                }
+            }
+        }
+        catch(IOException e)
+        {
+            new AlertDialog.Builder(this).setMessage("Error Loading:" + e).show();
+        }
 
 
     }
