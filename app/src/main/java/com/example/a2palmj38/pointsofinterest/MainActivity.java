@@ -1,8 +1,11 @@
 package com.example.a2palmj38.pointsofinterest;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +18,11 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity
@@ -60,14 +68,28 @@ public class MainActivity extends Activity
         return true;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-      if (item.getItemId() == R.id.addmarker)
-      {
-        Intent intent = new Intent(this, PoiActivity.class);
-          startActivityForResult(intent, 0);
-          return true;
-      }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.addmarker)
+        {
+            Intent intent = new Intent(this, PoiActivity.class);
+            startActivityForResult(intent, 0);
+            return true;
+        }
+        else if(item.getItemId() == R.id.savemarker)
+        {
+            markersave();
+            return true;
+        }
+        else if (item.getItemId() == R.id.loadmarker)
+        {
+            markerload();
+            return true;
+        }
+        else if (item.getItemId() == R.id.preferences)
+        {
+            Intent intent = new Intent(this, PreferenceActivity.class);
+            return true;
+        }
        return false;
     }
 
@@ -93,7 +115,39 @@ public class MainActivity extends Activity
             Toast.makeText(MainActivity.this, "Marker has been added!", Toast.LENGTH_SHORT).show();
         }
     }
+    private void markersave()
+    {
+        Toast.makeText(MainActivity.this, "Marker has been saved!", Toast.LENGTH_SHORT).show();
+
+        try
+        {
+            PrintWriter pw = new PrintWriter(new FileWriter(Environment.getExternalStorageDirectory().getAbsolutePath() + "/markers.txt"));
+
+            for (int i = 0; i < items.size(); i++)
+            {
+                OverlayItem item = items.getItem(i);
+                String stringMarkerSave = item.getTitle() + ", " + item.getSnippet() + ", " + item.getPoint().getLatitude() + ", " + item.getPoint().getLongitude();
+                pw.println(stringMarkerSave);
+
+            }
+            pw.flush();
+            pw.close();
+        }
+        catch(IOException e)
+        {
+            new AlertDialog.Builder(this).setMessage("Error Saving: " + e).show();
+        }
+
+    }
 
 
 
+    private void markerload()
+    {
+        Toast.makeText(MainActivity.this, "Markers loaded!", Toast.LENGTH_SHORT).show();
+
+
+
+
+    }
 }
