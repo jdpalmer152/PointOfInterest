@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PoiActivity" android:label="Points of Interest Menu"></activity>
+        <activity android:name=".PreferencesActivity" android:label="Preferences"></activity>
     </application>
 
 </manifest>

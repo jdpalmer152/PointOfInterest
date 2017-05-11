@@ -3,6 +3,7 @@ package com.example.a2palmj38.pointsofinterest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceActivity;
@@ -28,8 +29,10 @@ import java.util.ArrayList;
 public class MainActivity extends Activity
 {
    MapView mv;
-    ItemizedIconOverlay<OverlayItem> items;
-    ItemizedIconOverlay.OnItemGestureListener<OverlayItem> markerGestureListener;
+   ItemizedIconOverlay<OverlayItem> items;
+   ItemizedIconOverlay.OnItemGestureListener<OverlayItem> markerGestureListener;
+   public boolean upload;
+
    protected void onCreate(Bundle savedInstancedState)
    {
         super.onCreate(savedInstancedState);
@@ -68,6 +71,13 @@ public class MainActivity extends Activity
         return true;
     }
 
+    public void onStart()
+    {
+        super.onStart();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        upload = prefs.getBoolean("upload", true);
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.addmarker)
         {
@@ -87,7 +97,8 @@ public class MainActivity extends Activity
         }
         else if (item.getItemId() == R.id.preferences)
         {
-            Intent intent = new Intent(this, PreferenceActivity.class);
+            Intent intent = new Intent(this, PreferencesActivity.class);
+            startActivityForResult(intent, 1);
             return true;
         }
        return false;
@@ -95,25 +106,27 @@ public class MainActivity extends Activity
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
-        if(requestCode==0)
-        {
+     if (upload == false)
+     {
+         if (requestCode == 0) {
 
-            Bundle bundle = intent.getExtras();
+             Bundle bundle = intent.getExtras();
 
-            String POIName = bundle.getString("2palmj38.name");
-            String POIType = bundle.getString("2palmj38.type");
-            String POIDesc = bundle.getString("2palmj38.desc");
+             String POIName = bundle.getString("2palmj38.name");
+             String POIType = bundle.getString("2palmj38.type");
+             String POIDesc = bundle.getString("2palmj38.desc");
 
-            double latitude = mv.getMapCenter().getLatitude();
-            double longitude = mv.getMapCenter().getLongitude();
+             double latitude = mv.getMapCenter().getLatitude();
+             double longitude = mv.getMapCenter().getLongitude();
 
-            OverlayItem item = new OverlayItem(POIName, POIType + POIDesc, new GeoPoint(latitude, longitude));
+             OverlayItem item = new OverlayItem(POIName, POIType + POIDesc, new GeoPoint(latitude, longitude));
 
-            items.addItem(item);
-            mv.invalidate();
+             items.addItem(item);
+             mv.invalidate();
 
-            Toast.makeText(MainActivity.this, "Marker has been added!", Toast.LENGTH_SHORT).show();
-        }
+             Toast.makeText(MainActivity.this, "Marker has been added!", Toast.LENGTH_SHORT).show();
+         }
+     }
     }
     private void markersave()
     {
@@ -150,4 +163,5 @@ public class MainActivity extends Activity
 
 
     }
+
 }
